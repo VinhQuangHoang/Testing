@@ -1,0 +1,104 @@
+﻿@model User
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container-fluid">
+    <h1 class="display-4">Ajax Create user</h1>
+    <form id="ajax-create-user" asp-action="AjaxCreate">
+        <div class="col-6">
+            <div class="alert alert-success d-none" role="alert">
+                &nbsp;
+            </div>
+            <div class="form-group">
+                <label asp-for="UserName" class="control-label"></label>
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SureName" class="control-label"></label>
+                <input asp-for="SureName" class="form-control" />
+                <span asp-validation-for="SureName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EmailAddress" class="control-label"></label>
+                <input asp-for="EmailAddress" class="form-control" />
+                <span asp-validation-for="EmailAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNumber" class="control-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="NhoTK" /> @Html.DisplayNameFor(model => model.NhoTK)
+                </label>
+            </div>
+            <button id="btn-save" type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //console.log("ready!");
+            //$('#ajax-create-user').on('submit', function () {
+            //    console.log("submitted");
+            //})
+            $('#btn-save').on('click', function (e) {
+                if ($('#ajax-create-user').valid()) {
+                    e.preventDefault();
+                    var user = {
+                        id: 0,
+                        username: $('#UserName').val(),
+                        name: $('#Name').val(),
+                        surename: $('#SureName').val(),
+                        password: $('#Password').val(),
+                        emailaddress: $('#EmailAddress').val(),
+                        phonenumber: $('#PhoneNumber').val(),
+
+                        __RequestVerificationToken: $("#ajax-create-user  input[name='__RequestVerificationToken']").val()
+                    };
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/users/AjaxCreate',
+                        //contentType: "application/json; charset=utf-8",
+                        contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                        dataType: 'json', // type of response data
+                        timeout: 3000, // timeout milliseconds
+                        data: user,
+                        success: function (result, status, xhr) { // success callback function
+                            if (result) {
+                                var $successAlert = $("#ajax-create-user").find('.alert-success');
+
+                                $successAlert.text("Succeed!").removeClass("d-none");
+
+                                setTimeout(function () {
+                                    $successAlert.addClass("d-none")
+                                }, 2000);
+
+                                $("#ajax-create-user")[0].reset();
+                            }
+                        },
+                        error: function (jqXhr, textStatus, errorMessage) { // error callback
+                            console.log('error', errorMessage)
+                        }
+                    });
+                }
+            })
+        });
+    </script>
+}
